@@ -21,8 +21,6 @@
                 no incluir node_modules. (archivo .gitignore y escribir adentro node_modules)
 **/
 
-
-
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 export default class ProductManager {
     #id = 0;
@@ -52,28 +50,30 @@ export default class ProductManager {
         console.log(products)}
         return this.#products;
     }   
-    addProduct (name, description, price,thumbnail,code,stock){
+    addProduct (newProduct){
         try{
-            console.log(code)
-        const codeExist = this.#products.find(p => p.code === code);
-        if (codeExist){
-            console.log("el codigo del producto ya existe")
+            console.log(newProduct.code)
+            // esta validacion del codigo existente
+            const codeExist = this.#products.find(p => p.code === newProduct.code);
+            if (codeExist){
+            return ("el codigo del producto ya existe")
         } else{
-            const newProduct = {
-                id: this.#products.length + 1,
-                name,
-                description,
-                price,
-                thumbnail,
-                code,
-                stock,
-            }
+             newProduct.id =  this.#products.length + 1,
+           
             this.#products.push(newProduct);
             writeFileSync(this.#path,JSON.stringify(this.#products))
             console.log(this.#products)
         }}
         catch(error){console.log(error)}
         }
+
+
+
+
+
+
+
+        
      getProductoById(id){
             const ProductExist = this.#products.find(product=> 
                  product.id === id)
