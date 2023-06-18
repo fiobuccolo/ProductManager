@@ -1,13 +1,18 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
+import ProductManager from './productmanager.js';
+
 
 export default class CartManager {
-    #id = 0;
+    #id;
     #carts;
     #path
+    #products
 
     constructor(path) {
+        // CartManager.#id = this.#carts.length > 0 ? this.#carts[this.#carts.length-1].id :0;
         this.#path = path;
-        this.#carts = this.#readFile();     
+        this.#carts = this.#readFile();  
+        this.#products = new ProductManager('files/productos.json');
     }
 
     #readFile(){
@@ -58,7 +63,6 @@ export default class CartManager {
 
            
 
-
         /*
          agrega un producto al carrito - 
          solo agregar el id
@@ -66,24 +70,40 @@ export default class CartManager {
         */
     updateCart(cartId, productId) {
             try {
-                // const indiceCart = this.#carts.findIndex(cart => cart.id === cartId);
-                const cart = this.#carts.find(cart => cart.id == cartId);
-                const product = cart.products.find(product => product.id == productId);
-                if (!cart){
+                 const indiceCart = this.#carts.findIndex(cart => cart.id === cartId);
+                const existeProducto = this.#products.getProductoById2(productId);
+             console.log(`carrito: ${indiceCart}`)
+             console.log(existeProducto) 
+
+               // const product = cart.#products.find(product => product.id == productId);
+               if (indiceCart < 0){
                     console.log( 'El carrito con ese ID no existe')
-                }else{
-                    if(product){
-                        product.quantity += 1;
-                    }else{
-                        const newProduct = {
-                            product: productId,
-                            quantity: 1,
-                        };
-                        cart.products.push(newProduct);
+                    return 'El carrito con ese ID no existe'
+              }  else {
+                    if(existeProducto){
+                        
+                        const indiceProduct = this.#carts[indiceCart].products.findIndex(p => p.id === productId);
+                        
+                        
+                        if(indiceProduct >= 0){
+                            console.log("entro por indice producto")
+                            this.#carts[indiceCart].products[indiceProduct].quantity = this.#carts[indiceCart].products[indiceProduct].quantity +1
+                        }else{
+                            console.log("No entro por indice producto")
+                        const product = {
+                            id: productId, 
+                            quantity: 1
                         }
-                    writeFileSync(this.#path, JSON.stringify(this.#carts));
-                    console.log( 'El carrito fue actualizado correctamente!')
-                     }
+                        this.#carts[indiceCart].products.push(product)
+                        }
+                        writeFileSync(this.#path,JSON.stringify(this.#carts))
+                        return 'El producto fue agregado'
+
+                         }else{ 
+                            console.log( 'El producto con ese ID no existe')
+                            return 'El producto con ese ID no existe'
+                            }
+                    }
                  }catch (error) {console.log(error);
                  }
                 }

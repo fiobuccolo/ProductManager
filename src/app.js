@@ -24,8 +24,8 @@ import cartsRouter from './routes/carts.router.js';
 //8. app.use
 app.use(express.json()) // ahora el servidor podra recibir json al momento de la peticion
 app.use(express.urlencoded({extended:true})) // permite que se pueda enviar información tmbien desde la url
-app.use('/products',productsRouter) // ruta
-app.use('/carts',cartsRouter) // ruta
+app.use('/api/products',productsRouter) // ruta
+app.use('/api/carts',cartsRouter) // ruta
 
 
 // respond with "primera solucion" when a GET request is made to the homepage
@@ -33,7 +33,6 @@ app.get('/', (req, res) => {
   return res.send('primera solución')
 })
 // app.get("ruta",callback)
-
 
 
 

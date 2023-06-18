@@ -23,11 +23,12 @@
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 export default class ProductManager {
-    #id = 0;
+    #id;
     #products;
     #path
 
     constructor(path) {
+    //    ProductManager.#id = this.#products.length > 0 ? this.#products[this.#products.length-1].id :0;
         this.#path = path;
         this.#products = this.#readFile();     
     }
@@ -53,6 +54,10 @@ export default class ProductManager {
     addProduct (newProduct){
         try{
             console.log(newProduct.code)
+            // validación de que estan todos los datos
+            if(!newProduct.name || !newProduct.description || !newProduct.price || !newProduct.category || !newProduct.stock || !newProduct.code) {
+              return ("Incomplete values")        
+                }
             // esta validacion del codigo existente
             const codeExist = this.#products.find(p => p.code === newProduct.code);
             if (codeExist){
@@ -63,23 +68,21 @@ export default class ProductManager {
             this.#products.push(newProduct);
             writeFileSync(this.#path,JSON.stringify(this.#products))
             console.log(this.#products)
+            return ("el producto fue agregado con exito")
         }}
         catch(error){console.log(error)}
         }
 
-
-
-
-
-
-
         
      getProductoById(id){
-            const ProductExist = this.#products.find(product=> 
-                 product.id === id)
+        const ProductExist = this.#products.find(product=> product.id === id)
              return ProductExist ? ProductExist : "No existe ese id de producto" 
-             
         } 
+
+        getProductoById2(id){
+            const ProductExist = this.#products.find(product=> product.id === id)
+                 return ProductExist ? ProductExist : false
+            } 
     updateProduct(id, props) {
             try {
                 const indice = this.#products.findIndex(product => product.id === id);
@@ -88,14 +91,30 @@ export default class ProductManager {
                     this.#products[indice] = { ...this.#products[indice], ...rest };
                     writeFileSync(this.#path, JSON.stringify(this.#products));
                     console.log( 'El producto fue actualizado correctamente!')
+                    return ( 'El producto fue actualizado correctamente!')
                 } else
+                    return (`El producto con ID ${id} no existe`)
                     console.log(`El producto con ID ${id} no existe`)
             } catch (error) {
                 console.log(error);
             }
         }
         
-    
+    // delete product
+    deleteProductoById(id){
+            const productIndex = this.#products.findIndex(product=> 
+             product.id === id)
+            console.log(`Product index: ${productIndex}`)
+             if(productIndex >= 0){
+                this.#products.splice(productIndex,1);
+                writeFileSync(this.#path,JSON.stringify(this.#products))
+                return ("producto eliminado")
+             }
+         return ("No existe ese id de producto")
+         
+    } 
+
+
     }
 
     

@@ -1,20 +1,23 @@
 // 1. importar router 
 import { Router } from "express";
 import CartManager from "../../managers/cartmanager.js";
+import ProductManager from "../../managers/productmanager.js";
+
+
 // 2. instanciar router 
 const cartsRouter = Router()
 const carts = new CartManager('files/carts.json')
 
 
-// consultar todos los carts
+/* Primer ENDPOINT: GET: consultar todos los carts **/
 cartsRouter.get('/',(req,res)=>{
      // leer el archivo products y devolverlos dentro de un objeto
      const c = carts.getCarts()
      res.json({carts:c})
     
 })
+/* SEGUDNO  ENDPOINT: GET: consultar un cart especifico y lista los productos que pertenezcan al carrito **/
 
-//2.get/:cid lista los productos que pertenezcan al carrito 
   cartsRouter.get("/:cartId", async (req,res) => {
     try{ 
      const { cartId } = req.params;
@@ -25,6 +28,7 @@ cartsRouter.get('/',(req,res)=>{
     }
     })
 
+  /* Tercer  ENDPOINT: POSt: Crear un carrito nuevo**/
     cartsRouter.post('/',(req,res)=>{
         try{ 
             const newCart = req.body;
@@ -41,6 +45,26 @@ cartsRouter.get('/',(req,res)=>{
         
        
    })
+
+/* Cuarto  ENDPOINT: POSt: Agregar productos a un carrito**/
+cartsRouter.post('/:cid/product/:pid',async (req,res) => {
+    try{ 
+     const { cid, pid } = req.params;
+ //    console.log(cid,pid);
+
+
+     const cart = await (carts.updateCart(parseInt(cid),parseInt(pid)))
+     res.json(cart);
+  }catch(error){ throw new Error (error)
+    }
+    })
+
+
+/* QUINTO  ENDPOINT: DELETE: ELiminar un carrito**/
+cartsRouter.delete('/',(req,res)=>{
+  return res.json({msg: "delete cart"})
+})
+/* SEXTO  ENDPOINT: DELETE: ELiminar un producto de un carrito **/
 
 
 
